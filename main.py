@@ -1,5 +1,5 @@
 # Main file for stuff. To start the program: python3 run.py
-from gui import gui_init, gui_update_pins, gui_update_blocksPlaced
+from gui import gui_init, gui_update_pins, gui_update_blocksPlaced, gui_show_zeus, gui_hide_zeus
 
 # CONFIG
 PORT = 'COM9'  # Port connected to Arduino.
@@ -12,7 +12,7 @@ INITIAL_DELAY = 5  # (seconds) Time to wait before checking if blocks are placed
 
 # Stuff to happen at startup
 def setup():
-    gui_init()
+    gui_init("zeus.png")
     return
 
 # Stuff to happen every time the loop runs.
@@ -25,10 +25,12 @@ def loop(pins):
 def blocks_placed():
     print("Blocks are placed!")
     gui_update_blocksPlaced("Blocks are currently placed!", "green")
+    gui_show_zeus()
     return
 
 # Stuff to happen when the blocks are removed
 def blocks_removed():
     print("Blocks are removed!")
     gui_update_blocksPlaced("Blocks are currently not placed!", "red")
+    gui_hide_zeus()
     return

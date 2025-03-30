@@ -7,15 +7,22 @@ import os
 root = None # GUI Window
 text_pins = None # Displays pin values
 text_blocksPlaced = None # Displays if blocks are placed or not
+zeus_image = None # Image of zeus
 
-def gui_init():
+def gui_init(img_zeus_path):
     # Init the tkiner window (for GUI). Use ESC to quit and F11 to toggle fullscreen.
     def start_gui():
-        global root, text_pins, text_blocksPlaced
+        global root, text_pins, text_blocksPlaced, zeus_image
         root = tk.Tk()
         root.attributes('-fullscreen', True)
         root.bind("<Escape>", lambda e: gui_quit())
         root.bind("<F11>", lambda e: root.attributes('-fullscreen', not root.attributes('-fullscreen')))
+
+        # Zeus image
+        image = tk.PhotoImage(file=img_zeus_path)
+        zeus_image = tk.Label(root, image=image, bg="black")
+        zeus_image.image = image
+
         text_pins = tk.Label(root, text="", font=("Helvetica", 32), bg="black", fg="white")
         text_pins.pack(expand=True, fill=tk.BOTH)
         text_blocksPlaced = tk.Label(root, text="Program Started", font=("Helvetica", 32), bg="black", fg="white")
@@ -35,6 +42,18 @@ def gui_update_blocksPlaced(msg, color="white"):
     global root, text_blocksPlaced
     if root and text_blocksPlaced:
         root.after(0, lambda: text_blocksPlaced.config(text=msg, fg=color))
+    return
+
+def gui_show_zeus():
+    global root, zeus_image
+    if root and zeus_image:
+        root.after(0, lambda: zeus_image.pack(expand=True, fill=tk.BOTH))
+    return
+
+def gui_hide_zeus():
+    global root, zeus_image
+    if root and zeus_image:
+        root.after(0, lambda: zeus_image.pack_forget())
     return
 
 def gui_quit():
