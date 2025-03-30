@@ -1,5 +1,5 @@
 import serial
-from config import PORT, A0_THRESHOLD, A1_THRESHOLD, A2_THRESHOLD, A3_THRESHOLD, DETECT_DEBOUNCE_TIME, blocks_placed, blocks_removed, INITIAL_DELAY, act
+from main import PORT, A0_THRESHOLD, A1_THRESHOLD, A2_THRESHOLD, A3_THRESHOLD, DETECT_DEBOUNCE_TIME, blocks_placed, blocks_removed, INITIAL_DELAY, loop, setup
 import time
 
 ser = serial.Serial(PORT, 9600, timeout=1) # Set up serial connection
@@ -11,6 +11,8 @@ pins = {
     "A2": 1023,
     "A3": 1023
 }
+
+setup() # Call setup function
 
 # Function to parse line and extract id and data
 def parse(line):
@@ -69,16 +71,16 @@ def handle_detect(pins):
         threading.Timer(DETECT_DEBOUNCE_TIME, reset_debounce).start()
 
 # Infinite loop until program is exited
-def loop():
+def program_loop():
     try:
         while True:
             pins = receive(ser)
             handle_detect(pins)
-            act(pins)
+            loop(pins)
     except KeyboardInterrupt:
         print("Exiting program.")
     finally:
         ser.close()
 
 # Start the loop
-loop()
+program_loop()
