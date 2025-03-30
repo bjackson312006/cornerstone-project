@@ -1,34 +1,34 @@
 # Main file for stuff. To start the program: python3 run.py
+from gui import gui_init, gui_update_pins, gui_update_blocksPlaced
 
 # CONFIG
 PORT = 'COM9'  # Port connected to Arduino.
 A0_THRESHOLD = 50
-A1_THRESHOLD = 50
-A2_THRESHOLD = 50
-A3_THRESHOLD = 50
+A1_THRESHOLD = 10
+A2_THRESHOLD = 10
+A3_THRESHOLD = 10
 DETECT_DEBOUNCE_TIME = 0.5  # (seconds) Time to wait before checking if blocks are placed again.
 INITIAL_DELAY = 5  # (seconds) Time to wait before checking if blocks are placed for the first time. Makes it less janky
 
 # Stuff to happen at startup
 def setup():
-    print("Program started!")
-    # TODO - make it do stuff
+    gui_init()
     return
 
 # Stuff to happen every time the loop runs.
 # "pins" is a dictionary that contains pins["A0"], pins["A1"], pins["A2"]", and pins["A3"], whose values are updated continuously.
 def loop(pins):
-    # TODO - make it do stuff
+    gui_update_pins(pins)
     return
 
 # Stuff to happen when the blocks are placed
 def blocks_placed():
-    print("Blocks placed!")
-    # TODO - make it do stuff
+    print("Blocks are placed!")
+    gui_update_blocksPlaced("Blocks are currently placed!", "green")
     return
 
 # Stuff to happen when the blocks are removed
 def blocks_removed():
-    print("Blocks removed!")
-    # TODO - make it do stuff
+    print("Blocks are removed!")
+    gui_update_blocksPlaced("Blocks are currently not placed!", "red")
     return
