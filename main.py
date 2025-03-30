@@ -9,10 +9,11 @@ A2_THRESHOLD = 10
 A3_THRESHOLD = 10
 DETECT_DEBOUNCE_TIME = 0.5  # (seconds) Time to wait before checking if blocks are placed again.
 INITIAL_DELAY = 5  # (seconds) Time to wait before checking if blocks are placed for the first time. Makes it less janky
+IMAGE_PATH = "zeus.png"  # Path to the image of Zeus
 
 # Stuff to happen at startup
 def setup():
-    gui_init("zeus.png")
+    gui_init(IMAGE_PATH)
     return
 
 # Stuff to happen every time the loop runs.
