@@ -1,3 +1,6 @@
+# File to run the program. Handles serial communication with the Arduino, as well as detecting when blocks are placed or removed (with debouncing).
+# Even though this file runs the program, main.py is the main file that decides what happens when the blocks are placed/removed.
+
 import serial
 from main import PORT, A0_THRESHOLD, A1_THRESHOLD, A2_THRESHOLD, A3_THRESHOLD, DETECT_DEBOUNCE_TIME, blocks_placed, blocks_removed, INITIAL_DELAY, loop, setup
 import time
