@@ -12,18 +12,23 @@ INITIAL_DELAY = 5  # (seconds) Time to wait before checking if blocks are placed
 # Stuff to happen at startup
 def setup():
     print("Program started!")
+    # TODO - make it do stuff
     return
 
-# Stuff to happen every time the loop runs. "pins" is a dictionary that contains pins["A0"], pins["A1"], pins["A2"]", and pins["A3"], whose values are updated continuously.
+# Stuff to happen every time the loop runs.
+# "pins" is a dictionary that contains pins["A0"], pins["A1"], pins["A2"]", and pins["A3"], whose values are updated continuously.
 def loop(pins):
+    # TODO - make it do stuff
     return
 
 # Stuff to happen when the blocks are placed
 def blocks_placed():
     print("Blocks placed!")
+    # TODO - make it do stuff
     return
 
 # Stuff to happen when the blocks are removed
 def blocks_removed():
     print("Blocks removed!")
+    # TODO - make it do stuff
     return
