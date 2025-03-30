@@ -5,6 +5,7 @@ import time
 ser = serial.Serial(PORT, 9600, timeout=1) # Set up serial connection
 start_time = time.perf_counter() # Start time for serial connection
 
+# Initial values for the pins. Set them to max (1023 because 10-bit ADCs) to avoid jankiness during the first few seconds of the program.
 pins = {
     "A0": 1023,
     "A1": 1023,
