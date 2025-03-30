@@ -14,8 +14,9 @@ def setup():
     print("Program started!")
     return
 
-# Stuff to happen every time the loop runs
+# Stuff to happen every time the loop runs. "pins" is a dictionary that contains pins["A0"], pins["A1"], pins["A2"]", and pins["A3"], whose values are updated continuously.
 def loop(pins):
+    print("pins[A0]:", pins["A0"])
     return
 
 # Stuff to happen when the blocks are placed
