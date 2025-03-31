@@ -1,8 +1,8 @@
 # Main file for stuff. To start the program: python3 run.py
-from gui import gui_init, gui_update_pins, gui_update_blocksPlaced, gui_show_zeus, gui_hide_zeus
+from gui import gui_init, gui_update_pins, gui_update_blocksPlaced, gui_update_timer
 
 # CONFIG
-PORT = 'COM9'  # Port connected to Arduino.
+PORT = 'COM5'  # Port connected to Arduino.
 A0_THRESHOLD = 50
 A1_THRESHOLD = 10
 A2_THRESHOLD = 10
@@ -20,18 +20,17 @@ def setup():
 # "pins" is a dictionary that contains pins["A0"], pins["A1"], pins["A2"]", and pins["A3"], whose values are updated continuously.
 def loop(pins):
     gui_update_pins(pins)
+    gui_update_timer()
     return
 
 # Stuff to happen when the blocks are placed
 def blocks_placed():
     print("Blocks are placed!")
     gui_update_blocksPlaced("Blocks are currently placed!", "green")
-    gui_show_zeus()
     return
 
 # Stuff to happen when the blocks are removed
 def blocks_removed():
     print("Blocks are removed!")
     gui_update_blocksPlaced("Blocks are currently not placed!", "red")
-    gui_hide_zeus()
     return
