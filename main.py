@@ -2,7 +2,7 @@
 from gui import gui_init, gui_update_pins, gui_update_blocksPlaced, gui_update_timer
 
 # CONFIG
-PORT = 'COM5'  # Port connected to Arduino.
+PORT = 'COM9'  # Port connected to Arduino.
 A0_THRESHOLD = 50
 A1_THRESHOLD = 10
 A2_THRESHOLD = 10

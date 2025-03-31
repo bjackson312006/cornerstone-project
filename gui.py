@@ -5,6 +5,7 @@ import os
 from PIL import Image, ImageTk
 import time
 
+# All GUI-related variables:
 gui_state = -1  # -1 = not started, 0 = started, 1 = first hint, 2 = second hint, 3 = third hint, 4 = fourth hint, 5 = fifth hint
 timer_start_time = None
 
@@ -19,7 +20,7 @@ text_timer = None # Displays the timer
 def gui_init(img_zeus_path):
     # Init the tkiner window (for GUI). Use ESC to quit and F11 to toggle fullscreen.
     def start_gui():
-        global root, text_pins, text_title, zeus_image, text_pressSpace
+        global root, text_pins, text_title, zeus_image, text_pressSpace, text_timer
         root = tk.Tk()
         root.attributes('-fullscreen', True)
         root.bind("<Escape>", lambda e: gui_quit())
@@ -44,14 +45,14 @@ def gui_init(img_zeus_path):
         text_pins = tk.Label(root, text="", font=("Helvetica", 10), bg="white", fg="black")
         text_pins.pack(expand=True, fill=tk.BOTH)
 
-        text_timer = tk.Label(root, text="timer", font=("Helvetica", 10), bg="white", fg="black")
+        text_timer = tk.Label(root, text="timer", font=("Helvetica", 30), bg="white", fg="black")
         root.mainloop()
     gui_thread = threading.Thread(target=start_gui)
     gui_thread.start()
     return
 
 def gui_space():
-    global root, text_pressSpace, text_title, zeus_image, gui_state, text_timer
+    global root, text_pressSpace, text_title, zeus_image, gui_state, text_timer, timer_start_time, gui_state
     if(gui_state == -1):
         # -1 to 0: Transition to game
         # Hide title screen stuff
@@ -66,7 +67,9 @@ def gui_space():
 
     elif(gui_state == 0):
         # 0 to 1: Transition to first hint
-        gui_state = gui_state + 1
+        print("First hint!")
+        
+    gui_state = gui_state + 1
     return
 
 def gui_update_pins(pins):
@@ -77,7 +80,7 @@ def gui_update_pins(pins):
 
 def gui_update_timer():
     global root, text_timer, timer_start_time
-    if root and text_timer:
+    if gui_state != -1:
         elapsed_time = time.time() - timer_start_time
         minutes, seconds = divmod(elapsed_time, 60)
         formatted_time = f"{int(minutes):02}:{int(seconds):02}"
