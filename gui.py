@@ -16,11 +16,14 @@ text_title = None # Displays if blocks are placed or not
 zeus_image = None # Image of zeus
 text_pressSpace = None # Displays "Press space to continue" message
 text_timer = None # Displays the timer
+text_pressSpaceForHint = None # Displays "Press space for hint" message
+text_hintCounter = None # Displays the hint counter
+image_hint_label = None # Image of hint
 
 def gui_init(img_zeus_path):
     # Init the tkiner window (for GUI). Use ESC to quit and F11 to toggle fullscreen.
     def start_gui():
-        global root, text_pins, text_title, zeus_image, text_pressSpace, text_timer
+        global root, text_pins, text_title, zeus_image, text_pressSpace, text_timer, text_pressSpaceForHint, text_hintCounter, hint_image_label
         root = tk.Tk()
         root.attributes('-fullscreen', True)
         root.bind("<Escape>", lambda e: gui_quit())
@@ -38,6 +41,13 @@ def gui_init(img_zeus_path):
         zeus_image.image = image  # Keep a reference to avoid garbage collection
         zeus_image.pack(expand=True, fill=tk.BOTH)
 
+        hint_image = Image.open("hint-1.png")
+        resized_hint_image = hint_image.resize((329, 605))  # Set desired width and height
+        image_hint = ImageTk.PhotoImage(resized_hint_image)
+        # Hint image
+        hint_image_label = tk.Label(root, image=image_hint, bg="white")
+        hint_image_label.image = image_hint
+
         text_title = tk.Label(root, text="Olympian Trials: The Puzzle of Zeus", font=("Helvetica", 32), bg="white", fg="green")
         text_title.pack(expand=True, fill=tk.BOTH)
         text_pressSpace = tk.Label(root, text="Press space to continue", font=("Helvetica", 16), bg="white", fg="black")
@@ -46,13 +56,15 @@ def gui_init(img_zeus_path):
         text_pins.pack(expand=True, fill=tk.BOTH)
 
         text_timer = tk.Label(root, text="timer", font=("Helvetica", 30), bg="white", fg="black")
+        text_pressSpaceForHint = tk.Label(root, text="Press space for hint!", font=("Helvetica", 32), bg="white", fg="black")
+        text_hintCounter = tk.Label(root, text="(0/5 hints used)", font=("Helvetica", 24), bg="white", fg="black")
         root.mainloop()
     gui_thread = threading.Thread(target=start_gui)
     gui_thread.start()
     return
 
 def gui_space():
-    global root, text_pressSpace, text_title, zeus_image, gui_state, text_timer, timer_start_time, gui_state
+    global root, text_pressSpace, text_title, zeus_image, gui_state, text_timer, timer_start_time, gui_state, text_pressSpaceForHint, text_hintCounter, image_hint, hint_image_label
     if(gui_state == -1):
         # -1 to 0: Transition to game
         # Hide title screen stuff
@@ -64,10 +76,46 @@ def gui_space():
         timer_start_time = time.time() # Start the timer
         root.after(0, lambda: text_timer.config(text="Time: 00:00"))  # Initialize the timer text
         text_timer.pack(expand=True, fill=tk.BOTH)
+        text_pressSpaceForHint.pack(expand=True, fill=tk.BOTH)
+        text_hintCounter.pack(expand=True, fill=tk.BOTH)
 
     elif(gui_state == 0):
         # 0 to 1: Transition to first hint
+        root.after(0, lambda: text_hintCounter.config(text="(1/5 hints used)"))
+        hint_image_label.pack(expand=True, fill=tk.BOTH)
         print("First hint!")
+    elif(gui_state == 1):
+        # 1 to 2: Transition to second hint
+        root.after(0, lambda: text_hintCounter.config(text="(2/5 hints used)"))
+        hint_image = Image.open("hint-2.png")
+        resized_hint_image = hint_image.resize((329, 605))  # Set desired width and height
+        image_hint = ImageTk.PhotoImage(resized_hint_image)
+        root.after(0, lambda: hint_image_label.config(image=image_hint))
+        print("Second hint!")
+    elif(gui_state == 2):
+        # 2 to 3: Transition to third hint
+        root.after(0, lambda: text_hintCounter.config(text="(3/5 hints used)"))
+        hint_image = Image.open("hint-3.png")
+        resized_hint_image = hint_image.resize((329, 605))
+        image_hint = ImageTk.PhotoImage(resized_hint_image)
+        root.after(0, lambda: hint_image_label.config(image=image_hint))
+        print("Third hint!")
+    elif(gui_state == 3):
+        # 3 to 4: Transition to fourth hint
+        root.after(0, lambda: text_hintCounter.config(text="(4/5 hints used)"))
+        hint_image = Image.open("hint-4.png")
+        resized_hint_image = hint_image.resize((329, 605))
+        image_hint = ImageTk.PhotoImage(resized_hint_image)
+        root.after(0, lambda: hint_image_label.config(image=image_hint))
+        print("Fourth hint!")
+    elif(gui_state == 4):
+        # 4 to 5: Transition to fifth hint
+        root.after(0, lambda: text_hintCounter.config(text="(5/5 hints used)"))
+        hint_image = Image.open("hint-5.png")
+        resized_hint_image = hint_image.resize((329, 605))
+        image_hint = ImageTk.PhotoImage(resized_hint_image)
+        root.after(0, lambda: hint_image_label.config(image=image_hint))
+        print("Fifth hint!")
         
     gui_state = gui_state + 1
     return
