@@ -4,6 +4,7 @@ import threading
 import os
 from PIL import Image, ImageTk
 import time
+import pygame
 
 # All GUI-related variables:
 gui_state = -1  # -1 = not started, 0 = started, 1 = first hint, 2 = second hint, 3 = third hint, 4 = fourth hint, 5 = fifth hint, 6 = you win
@@ -122,12 +123,18 @@ def gui_space():
     return
 
 def gui_you_win():
-    global root, gui_state, text_timer, text_pins
+    global root, gui_state, text_timer, timer_start_time
 
     if root and (gui_state != -1):
-        # Cancel any pending `after` callbacks
+        gui_state = 6  # Set the state to indicate the game is over
+
+        # Stop the timer updates
         root.after_cancel(gui_update_timer)
-        root.after_cancel(gui_update_pins)
+
+        # Calculate elapsed time
+        elapsed_time = time.time() - timer_start_time
+        minutes, seconds = divmod(elapsed_time, 60)
+        formatted_time = f"{int(minutes):02}:{int(seconds):02}"
 
         # Destroy all widgets in the root window
         for widget in root.winfo_children():
@@ -136,9 +143,13 @@ def gui_you_win():
         # Display the "You Win" message
         you_win_label = tk.Label(root, text="You Win!", font=("Helvetica", 48), bg="white", fg="green")
         you_win_label.pack(expand=True, fill=tk.BOTH)
-        gui_state = 6 # Increment the state to indicate the game is over
+
+        # Display the final elapsed time
+        final_time_label = tk.Label(root, text=f"Final Time: {formatted_time}", font=("Helvetica", 32), bg="white", fg="black")
+        final_time_label.pack(expand=True, fill=tk.BOTH)
 
     return
+
 
 def gui_update_pins(pins):
     global gui_state
