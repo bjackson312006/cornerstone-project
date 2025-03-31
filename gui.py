@@ -6,7 +6,7 @@ from PIL import Image, ImageTk
 import time
 
 # All GUI-related variables:
-gui_state = -1  # -1 = not started, 0 = started, 1 = first hint, 2 = second hint, 3 = third hint, 4 = fourth hint, 5 = fifth hint
+gui_state = -1  # -1 = not started, 0 = started, 1 = first hint, 2 = second hint, 3 = third hint, 4 = fourth hint, 5 = fifth hint, 6 = you win
 timer_start_time = None
 
 # All GUI elements:
@@ -117,16 +117,42 @@ def gui_space():
         root.after(0, lambda: hint_image_label.config(image=image_hint))
         print("Fifth hint!")
         
-    gui_state = gui_state + 1
+    if(gui_state != 5):
+        gui_state = gui_state + 1
+    return
+
+def gui_you_win():
+    global root, gui_state, text_timer, text_pins
+
+    if root and (gui_state != -1):
+        # Cancel any pending `after` callbacks
+        root.after_cancel(gui_update_timer)
+        root.after_cancel(gui_update_pins)
+
+        # Destroy all widgets in the root window
+        for widget in root.winfo_children():
+            widget.destroy()
+
+        # Display the "You Win" message
+        you_win_label = tk.Label(root, text="You Win!", font=("Helvetica", 48), bg="white", fg="green")
+        you_win_label.pack(expand=True, fill=tk.BOTH)
+        gui_state = 6 # Increment the state to indicate the game is over
+
     return
 
 def gui_update_pins(pins):
+    global gui_state
+    if gui_state == 6:
+        return
     global root, text_pins
-    if root and text_pins:
+    if root and text_pins and (gui_state != 6):
         root.after(0, lambda: text_pins.config(text=f"Pins: {pins}"))
     return
 
 def gui_update_timer():
+    global gui_state
+    if gui_state == 6:
+        return
     global root, text_timer, timer_start_time
     if gui_state != -1:
         elapsed_time = time.time() - timer_start_time

@@ -1,5 +1,5 @@
 # Main file for stuff. To start the program: python3 run.py
-from gui import gui_init, gui_update_pins, gui_update_blocksPlaced, gui_update_timer
+from gui import gui_init, gui_update_pins, gui_you_win, gui_update_timer
 
 # CONFIG
 PORT = 'COM9'  # Port connected to Arduino.
@@ -26,11 +26,10 @@ def loop(pins):
 # Stuff to happen when the blocks are placed
 def blocks_placed():
     print("Blocks are placed!")
-    gui_update_blocksPlaced("Blocks are currently placed!", "green")
+    gui_you_win()
     return
 
 # Stuff to happen when the blocks are removed
 def blocks_removed():
     print("Blocks are removed!")
-    gui_update_blocksPlaced("Blocks are currently not placed!", "red")
     return
