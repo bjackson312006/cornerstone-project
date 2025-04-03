@@ -33,11 +33,19 @@ is_title_showing = True
 image_titlescreen_label = None
 image_instructions_label = None
 image_pressSpaceForHint_label = None
+image_ps0 = None # Image of press space for hint 0
+image_ps1 = None # Image of press space for hint 1
+image_ps2 = None # Image of press space for hint 2
+image_ps3 = None # Image of press space for hint 3
+image_ps4 = None # Image of press space for hint 4
+image_ps5 = None # Image of press space for hint 5
+image_youwin_label = None # Image of you win
+image_youwin = None # Image of you win
 
 def gui_init():
     # Init the tkiner window (for GUI). Use ESC to quit and F11 to toggle fullscreen.
     def start_gui():
-        global root, text_pins, text_title, zeus_image, text_pressSpace, text_timer, text_pressSpaceForHint, text_hintCounter, hint_image_label, text_restartForTheNextPlayer, image_olympianTrials, image_titlescreen, is_title_showing, image_titlescreen_label, image_titlescreen_notshowing, image_titlescreen_showing, image_instructions_label, image_pressSpaceForHint_label
+        global root, text_pins, text_title, zeus_image, text_pressSpace, text_timer, text_pressSpaceForHint, text_hintCounter, hint_image_label, text_restartForTheNextPlayer, image_olympianTrials, image_titlescreen, is_title_showing, image_titlescreen_label, image_titlescreen_notshowing, image_titlescreen_showing, image_instructions_label, image_pressSpaceForHint_label, image_ps0, image_ps1, image_ps2, image_ps3, image_ps4, image_ps5, image_youwin, image_youwin_label
         root = tk.Tk()
         root.attributes('-fullscreen', True)
         root.bind("<Escape>", lambda e: gui_quit())
@@ -58,11 +66,24 @@ def gui_init():
         image_instructions = ImageTk.PhotoImage(Image.open("instructions.png"))
         image_instructions_label = tk.Label(root, image=image_instructions, bg="white")
 
-        image_pressSpaceForHint = ImageTk.PhotoImage(Image.open("ps_0.png"))
-        image_pressSpaceForHint_label = tk.Label(root, image=image_pressSpaceForHint, bg="white")
+        image_ps0 = ImageTk.PhotoImage(Image.open("ps_0.png"))
+        image_ps1 = ImageTk.PhotoImage(Image.open("ps_1.png"))
+        image_ps2 = ImageTk.PhotoImage(Image.open("ps_2.png"))
+        image_ps3 = ImageTk.PhotoImage(Image.open("ps_3.png"))
+        image_ps4 = ImageTk.PhotoImage(Image.open("ps_4.png"))
+        image_ps5 = ImageTk.PhotoImage(Image.open("ps_5.png"))
+
+        image_pressSpaceForHint_label = tk.Label(root, image=image_ps0, bg="white")
+
+        # Pre-load the "You Win" image
+        image_youwin = ImageTk.PhotoImage(Image.open("YouWin.png"))
+        image_youwin_label = tk.Label(root, image=image_youwin, bg="white")
+        image_youwin_label.place(x=0, y=0, relwidth=1, relheight=1)
+        image_youwin_label.place_forget()  # Hide it initially
 
 
-        hint_image = Image.open("hint-1.png")
+
+        hint_image = Image.open("hint-0.png")
         resized_hint_image = hint_image.resize((329, 605))  # Set desired width and height
         image_hint = ImageTk.PhotoImage(resized_hint_image)
         # Hint image
@@ -81,7 +102,9 @@ def gui_init():
     return
 
 def toggle_title_image():
-    global image_titlescreen_label, root, is_title_showing, image_titlescreen_showing, image_titlescreen_notshowing
+    global image_titlescreen_label, root, is_title_showing, image_titlescreen_showing, image_titlescreen_notshowing, gui_state
+    if gui_state != -2 and gui_state != -1:
+        return
     if is_title_showing:
         image_titlescreen_label.config(image=image_titlescreen_notshowing)
         is_title_showing = False
@@ -92,7 +115,7 @@ def toggle_title_image():
 
 
 def gui_space():
-    global root, text_pressSpace, text_title, zeus_image, gui_state, text_timer, timer_start_time, gui_state, text_pressSpaceForHint, text_hintCounter, image_hint, hint_image_label, image_titlescreen_label, image_instructions_label,  image_pressSpaceForHint_label
+    global root, text_pressSpace, text_title, zeus_image, gui_state, text_timer, timer_start_time, gui_state, text_pressSpaceForHint, text_hintCounter, image_hint, hint_image_label, image_titlescreen_label, image_instructions_label,  image_pressSpaceForHint_label, image_ps0, image_ps1, image_ps2, image_ps3, image_ps4, image_ps5
     if(gui_state == -2):
         # -2 to -1: Transition to instructions
         # Hide title screen stuff
@@ -109,42 +132,48 @@ def gui_space():
         image_pressSpaceForHint_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         text_timer.place(relx=0.5, rely=0.1, anchor="center")  # Adjust relx, rely for positioning
+        hint_image_label.place(relx=0.5, rely=0.5, anchor="center")  # Center the hint image
+
 
     elif(gui_state == 0):
         # 0 to 1: Transition to first hint
-        hint_image_label.place(relx=0.5, rely=0.5, anchor="center")  # Center the hint image
-        print("First hint!")
+        hint_image = Image.open("hint-1.png")
+        resized_hint_image = hint_image.resize((329, 605))  # Set desired width and height
+        image_hint = ImageTk.PhotoImage(resized_hint_image)
+        root.after(0, lambda: hint_image_label.config(image=image_hint))
+        root.after(0, lambda: image_pressSpaceForHint_label.config(image=image_ps1))
+
     elif(gui_state == 1):
         # 1 to 2: Transition to second hint
-        root.after(0, lambda: text_hintCounter.config(text="(2/5 hints used)"))
         hint_image = Image.open("hint-2.png")
         resized_hint_image = hint_image.resize((329, 605))  # Set desired width and height
         image_hint = ImageTk.PhotoImage(resized_hint_image)
         root.after(0, lambda: hint_image_label.config(image=image_hint))
+        root.after(0, lambda: image_pressSpaceForHint_label.config(image=image_ps2))
         print("Second hint!")
     elif(gui_state == 2):
         # 2 to 3: Transition to third hint
-        root.after(0, lambda: text_hintCounter.config(text="(3/5 hints used)"))
         hint_image = Image.open("hint-3.png")
         resized_hint_image = hint_image.resize((329, 605))
         image_hint = ImageTk.PhotoImage(resized_hint_image)
         root.after(0, lambda: hint_image_label.config(image=image_hint))
+        root.after(0, lambda: image_pressSpaceForHint_label.config(image=image_ps3))
         print("Third hint!")
     elif(gui_state == 3):
         # 3 to 4: Transition to fourth hint
-        root.after(0, lambda: text_hintCounter.config(text="(4/5 hints used)"))
         hint_image = Image.open("hint-4.png")
         resized_hint_image = hint_image.resize((329, 605))
         image_hint = ImageTk.PhotoImage(resized_hint_image)
         root.after(0, lambda: hint_image_label.config(image=image_hint))
+        root.after(0, lambda: image_pressSpaceForHint_label.config(image=image_ps4))
         print("Fourth hint!")
     elif(gui_state == 4):
         # 4 to 5: Transition to fifth hint
-        root.after(0, lambda: text_hintCounter.config(text="(5/5 hints used)"))
         hint_image = Image.open("hint-5.png")
         resized_hint_image = hint_image.resize((329, 605))
         image_hint = ImageTk.PhotoImage(resized_hint_image)
         root.after(0, lambda: hint_image_label.config(image=image_hint))
+        root.after(0, lambda: image_pressSpaceForHint_label.config(image=image_ps5))
         print("Fifth hint!")
         
     if(gui_state != 5):
@@ -152,7 +181,7 @@ def gui_space():
     return
 
 def gui_you_win():
-    global root, gui_state, text_timer, timer_start_time, text_restartForTheNextPlayer
+    global root, gui_state, text_timer, timer_start_time, image_youwin_label, image_youwin
 
     if root and (gui_state != -2) and (gui_state != -1) and (gui_state != 6):
         # Stop the timer updates
@@ -163,21 +192,15 @@ def gui_you_win():
         minutes, seconds = divmod(elapsed_time, 60)
         formatted_time = f"{int(minutes):02}:{int(seconds):02}"
 
+        image_youwin_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+        final_time_label = tk.Label(root, text=f"Final Time: {formatted_time}", font=("Helvetica", 60, "bold"), bg="white", fg="black")
+        final_time_label.place(relx=0.5, rely=0.6, anchor="center")
+
         # Destroy all widgets in the root window
         for widget in root.winfo_children():
-            widget.destroy()
-
-        # Display the "You Win" message
-        you_win_label = tk.Label(root, text="You Win!", font=("Helvetica", 48), bg="white", fg="green")
-        you_win_label.pack(expand=True, fill=tk.BOTH)
-
-        # Display the final elapsed time
-        final_time_label = tk.Label(root, text=f"Final Time: {formatted_time}", font=("Helvetica", 32), bg="white", fg="black")
-        final_time_label.pack(expand=True, fill=tk.BOTH)
-
-        # Display the restart message
-        text_restartForTheNextPlayer = tk.Label(root, text="Press space to restart for the next player!", font=("Helvetica", 16), bg="white", fg="black")
-        text_restartForTheNextPlayer.pack(expand=True, fill=tk.BOTH)
+            if (widget != image_youwin_label) and (widget != final_time_label):  # Keep the "You Win" image label
+                widget.destroy()
 
         # Log the time to a CSV file
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -228,7 +251,5 @@ def gui_quit():
 
 def restart_script():
     global gui_state
-    if(gui_state < 6):
-        return
     python = sys.executable
     os.execv(python, ['python'] + sys.argv)

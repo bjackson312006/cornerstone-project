@@ -3,10 +3,10 @@ from gui import gui_init, gui_update_pins, gui_you_win, gui_update_timer
 import pygame
 # CONFIG
 PORT = 'COM9'  # Port connected to Arduino.
-A0_THRESHOLD = 60
-A1_THRESHOLD = 60
-A2_THRESHOLD = 60
-A3_THRESHOLD = 60
+A0_THRESHOLD = 5
+A1_THRESHOLD = 5
+A2_THRESHOLD = 5
+A3_THRESHOLD = 5
 DETECT_DEBOUNCE_TIME = 0.5  # (seconds) Time to wait before checking if blocks are placed again.
 INITIAL_DELAY = 5  # (seconds) Time to wait before checking if blocks are placed for the first time. Makes it less janky
 
@@ -19,6 +19,7 @@ def setup():
 # "pins" is a dictionary that contains pins["A0"], pins["A1"], pins["A2"]", and pins["A3"], whose values are updated continuously.
 def loop(pins):
     gui_update_pins(pins)
+    #print("Pins: ", pins)
     gui_update_timer()
     return
 
