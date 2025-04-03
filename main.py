@@ -2,18 +2,17 @@
 from gui import gui_init, gui_update_pins, gui_you_win, gui_update_timer
 import pygame
 # CONFIG
-PORT = 'COM5'  # Port connected to Arduino.
-A0_THRESHOLD = 50
-A1_THRESHOLD = 10
-A2_THRESHOLD = 10
-A3_THRESHOLD = 10
+PORT = 'COM9'  # Port connected to Arduino.
+A0_THRESHOLD = 60
+A1_THRESHOLD = 60
+A2_THRESHOLD = 60
+A3_THRESHOLD = 60
 DETECT_DEBOUNCE_TIME = 0.5  # (seconds) Time to wait before checking if blocks are placed again.
 INITIAL_DELAY = 5  # (seconds) Time to wait before checking if blocks are placed for the first time. Makes it less janky
-IMAGE_PATH = "zeus.png"  # Path to the image of Zeus
 
 # Stuff to happen at startup
 def setup():
-    gui_init(IMAGE_PATH)
+    gui_init()
     return
 
 # Stuff to happen every time the loop runs.

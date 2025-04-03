@@ -1,13 +1,17 @@
 # File for GUI stuff
 import tkinter as tk
+from tkinter import font
 import threading
 import os
 from PIL import Image, ImageTk
 import time
 import pygame
+import sys
+import csv
+from datetime import datetime
 
 # All GUI-related variables:
-gui_state = -1  # -1 = not started, 0 = started, 1 = first hint, 2 = second hint, 3 = third hint, 4 = fourth hint, 5 = fifth hint, 6 = you win
+gui_state = -2  # -1 = not started, 0 = started, 1 = first hint, 2 = second hint, 3 = third hint, 4 = fourth hint, 5 = fifth hint, 6 = you win
 timer_start_time = None
 
 # All GUI elements:
@@ -20,27 +24,43 @@ text_timer = None # Displays the timer
 text_pressSpaceForHint = None # Displays "Press space for hint" message
 text_hintCounter = None # Displays the hint counter
 image_hint_label = None # Image of hint
+text_restartForTheNextPlayer = None # Displays "Press space to restart for the next player" message
+image_olympianTrials = None # Image of Olympian Trials
+image_zeus2 = None # Image of Zeus 2
+image_titlescreen_showing = None
+image_titlescreen_notshowing = None # Image of title screen not showing
+is_title_showing = True
+image_titlescreen_label = None
+image_instructions_label = None
+image_pressSpaceForHint_label = None
 
-def gui_init(img_zeus_path):
+def gui_init():
     # Init the tkiner window (for GUI). Use ESC to quit and F11 to toggle fullscreen.
     def start_gui():
-        global root, text_pins, text_title, zeus_image, text_pressSpace, text_timer, text_pressSpaceForHint, text_hintCounter, hint_image_label
+        global root, text_pins, text_title, zeus_image, text_pressSpace, text_timer, text_pressSpaceForHint, text_hintCounter, hint_image_label, text_restartForTheNextPlayer, image_olympianTrials, image_titlescreen, is_title_showing, image_titlescreen_label, image_titlescreen_notshowing, image_titlescreen_showing, image_instructions_label, image_pressSpaceForHint_label
         root = tk.Tk()
         root.attributes('-fullscreen', True)
         root.bind("<Escape>", lambda e: gui_quit())
         root.bind("<space>", lambda e: gui_space())
         root.bind("<F11>", lambda e: root.attributes('-fullscreen', not root.attributes('-fullscreen')))
+        root.bind("<Control-space>", lambda e: restart_script())
 
-        gui_state = -1 # default state
 
-        # Resize the image using Pillow
-        original_image = Image.open(img_zeus_path)
-        resized_image = original_image.resize((800, 800))  # Set desired width and height
-        image = ImageTk.PhotoImage(resized_image)
-        # Zeus image
-        zeus_image = tk.Label(root, image=image, bg="white")
-        zeus_image.image = image  # Keep a reference to avoid garbage collection
-        zeus_image.pack(expand=True, fill=tk.BOTH)
+        gui_state = -2 # default state
+
+        image_titlescreen_showing = ImageTk.PhotoImage(Image.open("title_screen_showing.png"))
+        image_titlescreen_notshowing = ImageTk.PhotoImage(Image.open("title_screen_notshowing.png"))
+        image_titlescreen_label = tk.Label(root, image=image_titlescreen_showing, bg="white")
+        image_titlescreen_label.pack(expand=True, fill=tk.BOTH)
+        is_title_showing = True
+        toggle_title_image()
+
+        image_instructions = ImageTk.PhotoImage(Image.open("instructions.png"))
+        image_instructions_label = tk.Label(root, image=image_instructions, bg="white")
+
+        image_pressSpaceForHint = ImageTk.PhotoImage(Image.open("ps_0.png"))
+        image_pressSpaceForHint_label = tk.Label(root, image=image_pressSpaceForHint, bg="white")
+
 
         hint_image = Image.open("hint-1.png")
         resized_hint_image = hint_image.resize((329, 605))  # Set desired width and height
@@ -49,14 +69,10 @@ def gui_init(img_zeus_path):
         hint_image_label = tk.Label(root, image=image_hint, bg="white")
         hint_image_label.image = image_hint
 
-        text_title = tk.Label(root, text="Olympian Trials: The Puzzle of Zeus", font=("Helvetica", 32), bg="white", fg="green")
-        text_title.pack(expand=True, fill=tk.BOTH)
-        text_pressSpace = tk.Label(root, text="Press space to continue", font=("Helvetica", 16), bg="white", fg="black")
-        text_pressSpace.pack(expand=True, fill=tk.BOTH)
-        text_pins = tk.Label(root, text="", font=("Helvetica", 10), bg="white", fg="black")
-        text_pins.pack(expand=True, fill=tk.BOTH)
+        #text_pins = tk.Label(root, text="", font=("Helvetica", 10), bg="white", fg="black")
+        #text_pins.pack(expand=True, fill=tk.BOTH)
 
-        text_timer = tk.Label(root, text="timer", font=("Helvetica", 30), bg="white", fg="black")
+        text_timer = tk.Label(root, text="timer", font=("Helvetica", 60, "bold"), bg="white", fg="black")
         text_pressSpaceForHint = tk.Label(root, text="Press space for hint!", font=("Helvetica", 32), bg="white", fg="black")
         text_hintCounter = tk.Label(root, text="(0/5 hints used)", font=("Helvetica", 24), bg="white", fg="black")
         root.mainloop()
@@ -64,26 +80,39 @@ def gui_init(img_zeus_path):
     gui_thread.start()
     return
 
+def toggle_title_image():
+    global image_titlescreen_label, root, is_title_showing, image_titlescreen_showing, image_titlescreen_notshowing
+    if is_title_showing:
+        image_titlescreen_label.config(image=image_titlescreen_notshowing)
+        is_title_showing = False
+    else:
+        image_titlescreen_label.config(image=image_titlescreen_showing)
+        is_title_showing = True
+    root.after(500, toggle_title_image)
+
+
 def gui_space():
-    global root, text_pressSpace, text_title, zeus_image, gui_state, text_timer, timer_start_time, gui_state, text_pressSpaceForHint, text_hintCounter, image_hint, hint_image_label
-    if(gui_state == -1):
-        # -1 to 0: Transition to game
+    global root, text_pressSpace, text_title, zeus_image, gui_state, text_timer, timer_start_time, gui_state, text_pressSpaceForHint, text_hintCounter, image_hint, hint_image_label, image_titlescreen_label, image_instructions_label,  image_pressSpaceForHint_label
+    if(gui_state == -2):
+        # -2 to -1: Transition to instructions
         # Hide title screen stuff
-        root.after(0, lambda: text_pressSpace.pack_forget())
-        root.after(0, lambda: text_title.pack_forget())
-        root.after(0, lambda: text_pins.pack_forget())
-        root.after(0, lambda: zeus_image.pack_forget())
+        root.after(0, lambda: (image_titlescreen_label.pack_forget(), toggle_title_image()))
+        # Show instructions
+        root.after(0, lambda: image_instructions_label.pack(expand=True, fill=tk.BOTH))
+    elif(gui_state == -1):
+        # -1 to 0: Transition to game start
+        # Hide instructions
+        root.after(0, lambda: image_instructions_label.pack_forget())
         # Show game stuff
         timer_start_time = time.time() # Start the timer
         root.after(0, lambda: text_timer.config(text="Time: 00:00"))  # Initialize the timer text
-        text_timer.pack(expand=True, fill=tk.BOTH)
-        text_pressSpaceForHint.pack(expand=True, fill=tk.BOTH)
-        text_hintCounter.pack(expand=True, fill=tk.BOTH)
+        image_pressSpaceForHint_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+        text_timer.place(relx=0.5, rely=0.1, anchor="center")  # Adjust relx, rely for positioning
 
     elif(gui_state == 0):
         # 0 to 1: Transition to first hint
-        root.after(0, lambda: text_hintCounter.config(text="(1/5 hints used)"))
-        hint_image_label.pack(expand=True, fill=tk.BOTH)
+        hint_image_label.place(relx=0.5, rely=0.5, anchor="center")  # Center the hint image
         print("First hint!")
     elif(gui_state == 1):
         # 1 to 2: Transition to second hint
@@ -123,11 +152,9 @@ def gui_space():
     return
 
 def gui_you_win():
-    global root, gui_state, text_timer, timer_start_time
+    global root, gui_state, text_timer, timer_start_time, text_restartForTheNextPlayer
 
-    if root and (gui_state != -1):
-        gui_state = 6  # Set the state to indicate the game is over
-
+    if root and (gui_state != -2) and (gui_state != -1) and (gui_state != 6):
         # Stop the timer updates
         root.after_cancel(gui_update_timer)
 
@@ -148,6 +175,18 @@ def gui_you_win():
         final_time_label = tk.Label(root, text=f"Final Time: {formatted_time}", font=("Helvetica", 32), bg="white", fg="black")
         final_time_label.pack(expand=True, fill=tk.BOTH)
 
+        # Display the restart message
+        text_restartForTheNextPlayer = tk.Label(root, text="Press space to restart for the next player!", font=("Helvetica", 16), bg="white", fg="black")
+        text_restartForTheNextPlayer.pack(expand=True, fill=tk.BOTH)
+
+        # Log the time to a CSV file
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open("time_list.csv", mode="a", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow([current_datetime, formatted_time])
+
+        gui_state = 6  # Set the state to indicate the game is over
+
     return
 
 
@@ -165,7 +204,7 @@ def gui_update_timer():
     if gui_state == 6:
         return
     global root, text_timer, timer_start_time
-    if gui_state != -1:
+    if gui_state != -2 and gui_state != -1:
         elapsed_time = time.time() - timer_start_time
         minutes, seconds = divmod(elapsed_time, 60)
         formatted_time = f"{int(minutes):02}:{int(seconds):02}"
@@ -186,3 +225,10 @@ def gui_quit():
         
     os._exit(0)  # Force exit the program
     return
+
+def restart_script():
+    global gui_state
+    if(gui_state < 6):
+        return
+    python = sys.executable
+    os.execv(python, ['python'] + sys.argv)
