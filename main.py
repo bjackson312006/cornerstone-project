@@ -1,12 +1,12 @@
 # Main file for stuff. To start the program: python3 run.py
-from gui import gui_init, gui_update_pins, gui_you_win, gui_update_timer
+from gui import gui_init, gui_update_pins, gui_you_win, gui_update_timer, gui_state
 import pygame
 # CONFIG
 PORT = 'COM9'  # Port connected to Arduino.
-A0_THRESHOLD = 5
-A1_THRESHOLD = 5
-A2_THRESHOLD = 5
-A3_THRESHOLD = 5
+A0_THRESHOLD = 50
+A1_THRESHOLD = 50
+A2_THRESHOLD = 50
+A3_THRESHOLD = 50
 DETECT_DEBOUNCE_TIME = 0.5  # (seconds) Time to wait before checking if blocks are placed again.
 INITIAL_DELAY = 5  # (seconds) Time to wait before checking if blocks are placed for the first time. Makes it less janky
 
