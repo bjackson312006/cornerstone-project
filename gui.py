@@ -194,8 +194,8 @@ def gui_you_win():
 
         image_youwin_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-        final_time_label = tk.Label(root, text=f"Final Time: {formatted_time}", font=("Helvetica", 60, "bold"), bg="white", fg="black")
-        final_time_label.place(relx=0.5, rely=0.6, anchor="center")
+        final_time_label = tk.Label(root, text=f"Final Time: {formatted_time}", font=("Helvetica", 100, "bold"), bg="white", fg="black")
+        final_time_label.place(relx=0.5, rely=0.65, anchor="center")
 
         # Destroy all widgets in the root window
         for widget in root.winfo_children():
